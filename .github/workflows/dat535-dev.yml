@@ -3,9 +3,12 @@ name: DAT535 — Dev Pipeline
 on:
   push:
     branches: [dev]
-  pull_request:
-    branches: [dev]
   workflow_dispatch:
+
+# one run at a time per output folder (dev / prod)
+concurrency:
+  group: dat535-dev
+  cancel-in-progress: false
 
 jobs:
   run-dev:
@@ -15,6 +18,8 @@ jobs:
     env:
       DAT535_ENV: dev
       DAT535_OUTPUT_DIR: /tmp/spark-lab-data/dev
+      DAT535_RAW_DIR: /tmp/spark-lab-data/raw
+      DAT535_YEARS: "2025"
       SPARK_HOME: /opt/spark
       JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
 
@@ -22,7 +27,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
-      - name: Run Lab 2 & Lab 3 Pipelines
+      - name: Test
+        run: |
+          source ~/spark-env/bin/activate
+          pip install --quiet pytest
+          python -m pytest -q
+
+      - name: Run Bronze -> Silver -> Gold
         run: |
           source ~/spark-env/bin/activate
           
@@ -30,9 +41,16 @@ jobs:
           python $GITHUB_WORKSPACE/run_pipeline.py all
 
       - name: Upload Dev artifacts
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: dev-outputs-${{ github.run_number }}
-          path: /tmp/spark-lab-data/dev/
+          path: |
+            /tmp/spark-lab-data/dev/logs/
+            /tmp/spark-lab-data/dev/bronze/manifests/
+            /tmp/spark-lab-data/dev/silver/_READY.json
+            /tmp/spark-lab-data/dev/silver/runs/*/quality_report.json
+            /tmp/spark-lab-data/dev/silver/quality_history.jsonl
+            /tmp/spark-lab-data/dev/gold/_READY.json
           retention-days: 7
           if-no-files-found: ignore

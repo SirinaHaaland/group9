@@ -1,0 +1,36 @@
+name: Pipeline
+
+on:
+  workflow_dispatch:
+  #push:
+  #  branches: [ main ]
+  schedule:
+    # Alternative intervals (uncomment one and comment out the active line below):
+    #- cron: "0 0 * * *"    # every day at midnight UTC
+    #- cron: '0 * * * *'    # every hour
+    #- cron: '0 */6 * * *'  # every 6 hours
+    - cron: '0 0 1 * *'     # active: monthly, 1st of month at 00:00 UTC
+
+jobs:
+  run-pipeline:
+    name: Run PySpark Pipeline
+    runs-on: self-hosted
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+
+    - name: Run Pipeline
+      env:
+        SPARK_HOME: /opt/spark
+        JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
+      run: |
+        # Activate the environment
+        source ~/spark-env/bin/activate
+          
+        # Run the pipeline
+        echo "=== Starting Data Pipeline Execution ==="
+        python $GITHUB_WORKSPACE/run_pipeline.py all
+
+        echo ""
+        echo "=== All Pipelines Completed Successfully ==="

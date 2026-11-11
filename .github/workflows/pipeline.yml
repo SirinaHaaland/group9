@@ -5,11 +5,16 @@ on:
   #push:
   #  branches: [ main ]
   schedule:
-    # Alternative intervals (uncomment one and comment out the active line below):
+    # Alternative intervals:
     #- cron: "0 0 * * *"    # every day at midnight UTC
     #- cron: '0 * * * *'    # every hour
     #- cron: '0 */6 * * *'  # every 6 hours
-    - cron: '0 0 1 * *'     # active: monthly, 1st of month at 00:00 UTC
+    - cron: '0 0 1 * *'    # active: monthly, 1st of month at 00:00 UTC
+
+# one run at a time per output folder (dev / prod)
+concurrency:
+  group: dat535-prod
+  cancel-in-progress: false
 
 jobs:
   run-pipeline:
@@ -22,6 +27,10 @@ jobs:
 
     - name: Run Pipeline
       env:
+        DAT535_ENV: prod
+        DAT535_OUTPUT_DIR: /tmp/spark-lab-data/prod
+        DAT535_RAW_DIR: /tmp/spark-lab-data/raw
+        DAT535_YEARS: "2025"
         SPARK_HOME: /opt/spark
         JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
       run: |

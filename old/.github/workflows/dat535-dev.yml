@@ -1,0 +1,38 @@
+name: DAT535 — Dev Pipeline
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+  workflow_dispatch:
+
+jobs:
+  run-dev:
+    name: Run Dev Pipeline
+    runs-on: self-hosted
+    environment: dev
+    env:
+      DAT535_ENV: dev
+      DAT535_OUTPUT_DIR: /tmp/spark-lab-data/dev
+      SPARK_HOME: /opt/spark
+      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Run Lab 2 & Lab 3 Pipelines
+        run: |
+          source ~/spark-env/bin/activate
+          
+          echo "=== Running Dev Pipeline ==="
+          python $GITHUB_WORKSPACE/run_pipeline.py all
+
+      - name: Upload Dev artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: dev-outputs-${{ github.run_number }}
+          path: /tmp/spark-lab-data/dev/
+          retention-days: 7
+          if-no-files-found: ignore
