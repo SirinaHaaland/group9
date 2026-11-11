@@ -438,6 +438,7 @@ def run(source_dir=None, data_dir=None, years=None, partial_years=None):
         .appName("DAT535-Bronze-Ingestion")
         .master("local[*]")
         .config("spark.sql.shuffle.partitions", "8")
+        .config("spark.ui.showConsoleProgress", "false")
         .getOrCreate()
     )
 

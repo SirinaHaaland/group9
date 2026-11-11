@@ -257,6 +257,7 @@ def run(data_dir=None):
         .appName("DAT535-Gold")
         .config("spark.driver.memory", "4g")
         .config("spark.sql.shuffle.partitions", "16")
+        .config("spark.ui.showConsoleProgress", "false")
         .getOrCreate()
     )
 
