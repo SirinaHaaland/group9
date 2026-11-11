@@ -28,6 +28,7 @@ jobs:
     - name: Run Pipeline
       env:
         DAT535_ENV: prod
+        PYTHONUNBUFFERED: "1"
         DAT535_OUTPUT_DIR: /tmp/spark-lab-data/prod
         DAT535_RAW_DIR: /tmp/spark-lab-data/raw
         DAT535_YEARS: "2025"

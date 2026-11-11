@@ -1,4 +1,4 @@
-name: DAT535 — Production Pipeline
+name: DAT535 - Production Pipeline
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       lab:
-        description: Lab to run
+        description: Stage to run
         required: true
         default: all
         type: choice
@@ -24,6 +24,7 @@ jobs:
     environment: main
     env:
       DAT535_ENV: prod
+      PYTHONUNBUFFERED: "1"
       DAT535_OUTPUT_DIR: /tmp/spark-lab-data/prod
       DAT535_RAW_DIR: /tmp/spark-lab-data/raw
       DAT535_YEARS: "2025"
@@ -38,9 +39,9 @@ jobs:
         run: |
           source ~/spark-env/bin/activate
           
-          LAB_TO_RUN="${{ github.event.inputs.lab || 'all' }}"
-          echo "=== Running Production Pipeline ($LAB_TO_RUN) ==="
-          python $GITHUB_WORKSPACE/run_pipeline.py $LAB_TO_RUN
+          STAGE="${{ github.event.inputs.lab || 'all' }}"
+          echo "=== Running Production Pipeline ($STAGE) ==="
+          python $GITHUB_WORKSPACE/run_pipeline.py $STAGE
 
       - name: Upload Production artifacts
         if: always()
@@ -63,6 +64,6 @@ jobs:
           echo "| Key | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|-----|-------|" >> $GITHUB_STEP_SUMMARY
           echo "| Run # | ${{ github.run_number }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Lab | ${{ github.event.inputs.lab || 'all' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Stages | ${{ github.event.inputs.lab || 'all' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Triggered by | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Branch | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY

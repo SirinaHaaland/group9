@@ -1,4 +1,4 @@
-name: DAT535 — Dev Pipeline
+name: DAT535 - Dev Pipeline
 
 on:
   push:
@@ -17,6 +17,7 @@ jobs:
     environment: dev
     env:
       DAT535_ENV: dev
+      PYTHONUNBUFFERED: "1"
       DAT535_OUTPUT_DIR: /tmp/spark-lab-data/dev
       DAT535_RAW_DIR: /tmp/spark-lab-data/raw
       DAT535_YEARS: "2025"

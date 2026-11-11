@@ -624,6 +624,7 @@ def run(data_dir=None):
         .config("spark.driver.memory", "4g")
         .config("spark.sql.shuffle.partitions", "16")
         .config("spark.sql.session.timeZone", "UTC")
+        .config("spark.ui.showConsoleProgress", "false")
         .getOrCreate()
     )
     spark.sparkContext.setLogLevel("ERROR")
