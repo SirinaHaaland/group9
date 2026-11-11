@@ -10,7 +10,12 @@ on:
         required: true
         default: all
         type: choice
-        options: [all, lab2, lab3]
+        options: [all, bronze, silver, gold]
+
+# one run at a time per output folder (dev / prod)
+concurrency:
+  group: dat535-prod
+  cancel-in-progress: false
 
 jobs:
   deploy-prod:
@@ -20,6 +25,8 @@ jobs:
     env:
       DAT535_ENV: prod
       DAT535_OUTPUT_DIR: /tmp/spark-lab-data/prod
+      DAT535_RAW_DIR: /tmp/spark-lab-data/raw
+      DAT535_YEARS: "2025"
       SPARK_HOME: /opt/spark
       JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
 
@@ -36,10 +43,17 @@ jobs:
           python $GITHUB_WORKSPACE/run_pipeline.py $LAB_TO_RUN
 
       - name: Upload Production artifacts
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: prod-outputs-${{ github.run_number }}
-          path: /tmp/spark-lab-data/prod/
+          path: |
+            /tmp/spark-lab-data/prod/logs/
+            /tmp/spark-lab-data/prod/bronze/manifests/
+            /tmp/spark-lab-data/prod/silver/_READY.json
+            /tmp/spark-lab-data/prod/silver/runs/*/quality_report.json
+            /tmp/spark-lab-data/prod/silver/quality_history.jsonl
+            /tmp/spark-lab-data/prod/gold/_READY.json
           retention-days: 30
           if-no-files-found: ignore
 
