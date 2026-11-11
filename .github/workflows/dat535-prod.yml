@@ -43,6 +43,15 @@ jobs:
           echo "=== Running Production Pipeline ($STAGE) ==="
           python $GITHUB_WORKSPACE/run_pipeline.py $STAGE
 
+      - name: Run results notebook
+        run: |
+          source ~/spark-env/bin/activate
+          cd $GITHUB_WORKSPACE/notebooks
+          jupyter nbconvert --to notebook --execute \
+            --ExecutePreprocessor.timeout=900 \
+            --output-dir $DAT535_OUTPUT_DIR/notebooks \
+            results.ipynb
+
       - name: Upload Production artifacts
         if: always()
         uses: actions/upload-artifact@v7
@@ -55,6 +64,7 @@ jobs:
             /tmp/spark-lab-data/prod/silver/runs/*/quality_report.json
             /tmp/spark-lab-data/prod/silver/quality_history.jsonl
             /tmp/spark-lab-data/prod/gold/_READY.json
+            /tmp/spark-lab-data/prod/notebooks/results.ipynb
           retention-days: 30
           if-no-files-found: ignore
 
