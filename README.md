@@ -24,6 +24,22 @@ Tracks file checksums, schema information, and ingestion manifests.
 
 ## Silver - src/clean.py
 
+Standardizes data types and column names.
+Validates flight records and handles duplicates
+Separates accepted and rejected records with rejection reasons.
+Enriches flights with airport information using broadcast joins.
+Calculates UTC timestamps and time consistency flags.
+Applies quality gates before publishing.
+
+## Gold - src/aggregate.py
+
+Produces three analytical datasets:
+
+airline_performance: monthly airline punctuality and cancellation metrics
+airport_performance: monthly departure-airport performance
+daily_trends: daily statistics and seven day rolling delay and cancellation rates.
+
+Gold totals are validated against silver to ensure consistency.
 
 # Setup
 
